@@ -17,7 +17,14 @@
 
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100dvh;
+      max-height: 100dvh;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
     #map { width: 100%; height: 100%; z-index: 1; }
 
     ::-webkit-scrollbar { width: 4px; }
@@ -40,19 +47,19 @@
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-900 flex flex-col h-screen">
+<body class="bg-slate-900 text-slate-900 flex flex-col h-dvh">
 
   <!-- HEADER: Nhận diện VNPT & Kỹ thuật viên -->
-  <header class="bg-[#005aab] text-white px-3 py-2 flex items-center justify-between shadow-md z-20 shrink-0 border-b border-blue-400/30">
-    <div class="flex items-center gap-2.5 min-w-0">
-      <div class="bg-white text-[#005aab] font-black px-2 py-1 rounded text-xs tracking-wider shadow-sm shrink-0">
+  <header class="bg-[#005aab] text-white px-2.5 py-1.5 flex items-center justify-between shadow-md z-20 shrink-0 border-b border-blue-400/30">
+    <div class="flex items-center gap-2 min-w-0">
+      <div class="bg-white text-[#005aab] font-black px-2 py-0.5 rounded text-xs tracking-wider shadow-sm shrink-0">
         VNPT
       </div>
       <div class="min-w-0">
-        <div class="text-xs sm:text-sm font-extrabold uppercase tracking-tight text-amber-300 truncate">
+        <div class="text-xs font-extrabold uppercase tracking-tight text-amber-300 truncate">
           Trung Tâm Viễn Thông Cẩm Phả
         </div>
-        <div class="text-[11px] sm:text-xs font-medium text-blue-50 flex items-center gap-1.5 truncate">
+        <div class="text-[11px] font-medium text-blue-50 flex items-center gap-1.5 truncate">
           <span class="font-bold text-white">Vũ Ngọc Hải</span>
           <span class="text-blue-300">•</span>
           <a href="tel:0918961781" class="underline decoration-blue-300 hover:text-amber-200 font-mono">0918961781</a>
@@ -60,17 +67,14 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-1.5 shrink-0">
-      <!-- Nút hướng dẫn kỹ thuật viên -->
-      <button onclick="toggleGuideModal()" title="Hướng dẫn kỹ thuật viên" class="p-2 rounded-lg bg-blue-800/80 hover:bg-blue-700 active:scale-95 transition">
+    <div class="flex items-center gap-1 shrink-0">
+      <button onclick="toggleGuideModal()" title="Hướng dẫn kỹ thuật viên" class="p-1.5 rounded-lg bg-blue-800/80 hover:bg-blue-700 active:scale-95 transition">
         <i data-lucide="help-circle" class="w-4 h-4"></i>
       </button>
-      <!-- Nút chế độ ngoài trời nắng -->
-      <button id="btnSunMode" onclick="toggleSunMode()" title="Chế độ tương phản cao ngoài trời" class="p-2 rounded-lg bg-blue-800/80 hover:bg-blue-700 active:scale-95 transition">
+      <button id="btnSunMode" onclick="toggleSunMode()" title="Chế độ tương phản cao ngoài trời" class="p-1.5 rounded-lg bg-blue-800/80 hover:bg-blue-700 active:scale-95 transition">
         <i data-lucide="sun" class="w-4 h-4"></i>
       </button>
-      <!-- Nút lịch sử các ca đo -->
-      <button onclick="toggleHistoryModal()" title="Lịch sử đo kiểm" class="p-2 rounded-lg bg-blue-800/80 hover:bg-blue-700 active:scale-95 transition relative">
+      <button onclick="toggleHistoryModal()" title="Lịch sử đo kiểm" class="p-1.5 rounded-lg bg-blue-800/80 hover:bg-blue-700 active:scale-95 transition relative">
         <i data-lucide="history" class="w-4 h-4"></i>
         <span id="historyCount" class="hidden absolute -top-1 -right-1 bg-amber-400 text-slate-900 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
       </button>
@@ -78,10 +82,8 @@
   </header>
 
   <!-- BẢNG THÔNG SỐ ĐO KIỂM TRÊN CÙNG -->
-  <div class="bg-white/95 backdrop-blur px-3 py-2 shadow-md z-20 shrink-0 border-b border-slate-200 panel-card">
-    <!-- Hàng 1: Khoảng cách OTDR, Độ trùng võng cáp (%) & GPS -->
-    <div class="grid grid-cols-12 gap-1.5 items-center mb-2">
-      <!-- Nhập khoảng cách OTDR -->
+  <div class="bg-white/95 backdrop-blur px-2.5 py-2 shadow-md z-20 shrink-0 border-b border-slate-200 panel-card">
+    <div class="grid grid-cols-12 gap-1.5 items-center mb-1.5">
       <div class="col-span-4">
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">OTDR (m)</label>
         <div class="relative flex items-center">
@@ -91,7 +93,6 @@
         </div>
       </div>
 
-      <!-- Độ trùng võng cáp / hệ số dự phòng (%) -->
       <div class="col-span-3">
         <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Trùng võng</label>
         <select id="sagFactor" onchange="updateCalculations()"
@@ -104,8 +105,7 @@
         </select>
       </div>
 
-      <!-- Tọa độ GPS hiện tại -->
-      <div class="col-span-5 bg-slate-100 rounded-lg p-1.5 border border-slate-300 flex items-center justify-between">
+      <div class="col-span-5 bg-slate-100 rounded-lg p-1 border border-slate-300 flex items-center justify-between">
         <div class="overflow-hidden pr-1">
           <div class="flex items-center gap-1">
             <span id="gpsDot" class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
@@ -121,79 +121,78 @@
       </div>
     </div>
 
-    <!-- Hàng 2: Thẻ hiển thị Quãng đường đã đi & Khoảng cách còn lại -->
-    <div id="statusBanner" class="rounded-xl p-2.5 bg-slate-800 text-white transition-colors duration-300">
+    <div id="statusBanner" class="rounded-xl p-2 bg-slate-800 text-white transition-colors duration-300">
       <div class="grid grid-cols-2 gap-2 divide-x divide-slate-600/60">
         <div>
           <div class="text-[10px] uppercase tracking-wider opacity-80 font-semibold">Đã di chuyển từ GPON</div>
           <div class="flex items-baseline gap-1">
-            <span id="traveledDist" class="text-2xl font-black tracking-tight">0.0</span>
+            <span id="traveledDist" class="text-xl font-black tracking-tight">0.0</span>
             <span class="text-xs font-bold opacity-80">m</span>
           </div>
         </div>
         <div class="pl-3">
           <div class="text-[10px] uppercase tracking-wider opacity-80 font-semibold" id="remainLabel">Còn cách điểm đứt</div>
           <div class="flex items-baseline gap-1">
-            <span id="remainDist" class="text-2xl font-black tracking-tight">--</span>
+            <span id="remainDist" class="text-xl font-black tracking-tight">--</span>
             <span class="text-xs font-bold opacity-80">m</span>
           </div>
         </div>
       </div>
 
-      <div class="w-full bg-black/30 h-2 rounded-full mt-2 overflow-hidden">
+      <div class="w-full bg-black/30 h-1.5 rounded-full mt-1.5 overflow-hidden">
         <div id="progressBar" class="bg-emerald-400 h-full transition-all duration-300" style="width: 0%"></div>
       </div>
-      <div id="alertMessage" class="text-[11px] font-bold mt-1.5 text-center text-blue-200">
+      <div id="alertMessage" class="text-[11px] font-bold mt-1 text-center text-blue-200 truncate">
         Đứng tại Hộp GPON (Điểm A) và bấm "Bắt đầu đo từ GPON"
       </div>
     </div>
   </div>
 
   <!-- KHU VỰC BẢN ĐỒ CHÍNH -->
-  <div class="relative flex-1 w-full">
+  <div class="relative flex-1 min-h-0 w-full">
     <div id="map"></div>
 
-    <div class="absolute top-3 right-3 z-10 flex flex-col gap-2">
-      <button onclick="toggleMapLayer()" class="bg-white/95 backdrop-blur px-2.5 py-2 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center gap-0.5 active:scale-95 transition">
-        <i data-lucide="layers" class="w-5 h-5 text-blue-700"></i>
+    <div class="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1.5">
+      <button onclick="toggleMapLayer()" class="bg-white/95 backdrop-blur px-2 py-1.5 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center gap-0.5 active:scale-95 transition">
+        <i data-lucide="layers" class="w-4 h-4 text-blue-700"></i>
         <span id="layerLabel" class="text-[10px] font-bold text-slate-700">Vệ tinh</span>
       </button>
 
-      <button onclick="centerOnUser()" class="bg-white/95 backdrop-blur p-2.5 rounded-xl shadow-lg border border-slate-300 flex items-center justify-center active:scale-95 transition">
-        <i data-lucide="crosshair" class="w-5 h-5 text-blue-700"></i>
+      <button onclick="centerOnUser()" class="bg-white/95 backdrop-blur p-2 rounded-xl shadow-lg border border-slate-300 flex items-center justify-center active:scale-95 transition">
+        <i data-lucide="crosshair" class="w-4 h-4 text-blue-700"></i>
       </button>
 
-      <button id="btnManualMode" onclick="toggleManualMode()" class="bg-white/95 backdrop-blur px-2 py-2 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center gap-0.5 active:scale-95 transition">
-        <i data-lucide="mouse-pointer-click" class="w-5 h-5 text-slate-700"></i>
+      <button id="btnManualMode" onclick="toggleManualMode()" class="bg-white/95 backdrop-blur px-2 py-1.5 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center gap-0.5 active:scale-95 transition">
+        <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-slate-700"></i>
         <span class="text-[10px] font-bold text-slate-700">Chấm tay</span>
       </button>
 
-      <button onclick="openInGoogleMaps()" class="bg-white/95 backdrop-blur px-2 py-2 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center gap-0.5 active:scale-95 transition">
-        <i data-lucide="external-link" class="w-5 h-5 text-emerald-600"></i>
+      <button onclick="openInGoogleMaps()" class="bg-white/95 backdrop-blur px-2 py-1.5 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center gap-0.5 active:scale-95 transition">
+        <i data-lucide="external-link" class="w-4 h-4 text-emerald-600"></i>
         <span class="text-[10px] font-bold text-slate-700">G-Maps</span>
       </button>
     </div>
 
-    <div id="manualBanner" class="hidden absolute top-3 left-3 right-16 z-10 bg-amber-500 text-slate-950 px-3 py-2 rounded-xl shadow-lg text-xs font-bold flex items-center justify-between">
+    <div id="manualBanner" class="hidden absolute top-2.5 left-2.5 right-14 z-10 bg-amber-500 text-slate-950 px-2.5 py-1.5 rounded-xl shadow-lg text-xs font-bold flex items-center justify-between">
       <span>Chạm lên bản đồ để chấm tuyến cáp</span>
-      <button onclick="undoManualPoint()" class="bg-slate-900 text-white px-2 py-1 rounded text-[11px] ml-2 shrink-0">Hoàn tác</button>
+      <button onclick="undoManualPoint()" class="bg-slate-900 text-white px-2 py-0.5 rounded text-[11px] ml-2 shrink-0">Hoàn tác</button>
     </div>
   </div>
 
   <!-- THANH ĐIỀU KHIỂN DƯỚI CÙNG -->
-  <footer class="bg-white border-t border-slate-200 px-3 py-2.5 z-20 shrink-0 panel-card">
-    <div class="grid grid-cols-4 gap-2">
-      <button id="btnStartStop" onclick="toggleTracking()" class="col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition">
+  <footer class="bg-white border-t border-slate-200 px-2.5 py-2 z-20 shrink-0 panel-card">
+    <div class="grid grid-cols-4 gap-1.5">
+      <button id="btnStartStop" onclick="toggleTracking()" class="col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 px-2.5 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition">
         <i data-lucide="play" class="w-4 h-4 fill-current"></i>
         <span id="btnStartText">Bắt đầu từ GPON</span>
       </button>
 
-      <button onclick="addPinMarker()" class="col-span-1 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold py-2 px-1 rounded-xl shadow flex flex-col items-center justify-center text-[11px] transition">
+      <button onclick="addPinMarker()" class="col-span-1 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold py-1.5 px-1 rounded-xl shadow flex flex-col items-center justify-center text-[11px] transition">
         <i data-lucide="map-pin" class="w-4 h-4 mb-0.5"></i>
         <span>Ghim cột</span>
       </button>
 
-      <button onclick="resetAndSave()" class="col-span-1 bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-800 font-bold py-2 px-1 rounded-xl flex flex-col items-center justify-center text-[11px] transition">
+      <button onclick="resetAndSave()" class="col-span-1 bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-800 font-bold py-1.5 px-1 rounded-xl flex flex-col items-center justify-center text-[11px] transition">
         <i data-lucide="rotate-ccw" class="w-4 h-4 mb-0.5"></i>
         <span>Lưu / Mới</span>
       </button>
@@ -202,7 +201,7 @@
 
   <!-- MODAL HƯỚNG DẪN KỸ THUẬT VIÊN -->
   <div id="guideModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-3">
-    <div class="bg-white w-full max-w-md rounded-2xl max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+    <div class="bg-white w-full max-w-md rounded-2xl max-h-[88dvh] flex flex-col overflow-hidden shadow-2xl">
       <div class="px-4 py-3 bg-[#005aab] text-white flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="book-open" class="w-5 h-5 text-amber-300"></i>
@@ -217,7 +216,6 @@
       </div>
 
       <div class="p-3.5 overflow-y-auto space-y-3 text-xs text-slate-700 leading-relaxed">
-        <!-- Khối 1 -->
         <div class="p-3 rounded-xl bg-blue-50/90 border border-blue-200">
           <div class="font-extrabold text-blue-900 text-sm mb-1.5 flex items-center gap-1.5">
             <span class="text-blue-700">1</span> Quy trình dò điểm đứt ngoài hiện trường:
@@ -230,7 +228,6 @@
           </ol>
         </div>
 
-        <!-- Khối 2 -->
         <div class="p-3 rounded-xl bg-amber-50/90 border border-amber-200">
           <div class="font-extrabold text-amber-900 text-sm mb-1.5 flex items-center gap-1.5">
             <span class="text-amber-700">2</span> Bật GPS chính xác cao trên Android:
@@ -242,7 +239,6 @@
           </ul>
         </div>
 
-        <!-- Khối 3 -->
         <div class="p-3 rounded-xl bg-emerald-50/90 border border-emerald-200">
           <div class="font-extrabold text-emerald-900 text-sm mb-1 flex items-center gap-1.5">
             <i data-lucide="smartphone" class="w-4 h-4 text-emerald-700"></i>
@@ -264,7 +260,7 @@
 
   <!-- MODAL LỊCH SỬ ĐO KIỂM -->
   <div id="historyModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-3">
-    <div class="bg-white w-full max-w-md rounded-2xl max-h-[82vh] flex flex-col overflow-hidden shadow-2xl">
+    <div class="bg-white w-full max-w-md rounded-2xl max-h-[82dvh] flex flex-col overflow-hidden shadow-2xl">
       <div class="px-4 py-3 bg-[#005aab] text-white flex items-center justify-between">
         <div>
           <h3 class="font-bold text-sm">Lịch sử dò cáp quang OTDR</h3>
@@ -306,7 +302,7 @@
 
     let currentPos = null;
     let routePoints = [];
-    let totalDistance = 0;       // Quãng đường bản đồ/GPS thực tế (m)
+    let totalDistance = 0;
     let hasAlertedNear = false;
 
     let userMarker = null;
@@ -345,6 +341,7 @@
 
       startGPSWatch();
       renderHistory();
+      setTimeout(() => map.invalidateSize(), 200);
     }
 
     function startGPSWatch() {
@@ -453,7 +450,6 @@
       }
     }
 
-    // Quy đổi quãng đường thực tế có tính độ trùng võng cáp (%)
     function getAdjustedDistance() {
       const sagPct = parseFloat(document.getElementById('sagFactor').value) || 0;
       return totalDistance * (1 + sagPct / 100);
@@ -477,10 +473,10 @@
       if (targetOtdr <= 0) {
         remainEl.textContent = '--';
         progressBar.style.width = '0%';
-        banner.className = 'rounded-xl p-2.5 bg-slate-800 text-white transition-colors duration-300';
+        banner.className = 'rounded-xl p-2 bg-slate-800 text-white transition-colors duration-300';
         alertMsg.textContent = isTracking
           ? `Đang đo (trùng võng +${sagPct}%)... Nhập mét OTDR để cảnh báo`
-          : 'Đứng tại Hộp GPON (Điểm A) và bấm "Bắt đầu từ GPON"';
+          : 'Đứng tại Hộp GPON (Điểm A) và bấm "Bắt đầu đo từ GPON"';
         return;
       }
 
@@ -491,28 +487,28 @@
       if (Math.abs(diff) <= 5) {
         remainLabel.textContent = 'TẠI ĐIỂM ĐỨT (±5m)';
         remainEl.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}`;
-        banner.className = 'rounded-xl p-2.5 bg-red-600 text-white alert-blink';
+        banner.className = 'rounded-xl p-2 bg-red-600 text-white alert-blink';
         progressBar.className = 'bg-white h-full';
         alertMsg.textContent = '⚠️ ĐÃ ĐẾN VÙNG ĐIỂM ĐỨT CÁP QUANG! KIỂM TRA CỘT / MĂNG XÔNG!';
         triggerVibrateAndBeep();
       } else if (diff > 5 && diff <= 50) {
         remainLabel.textContent = 'Sắp tới điểm đứt';
         remainEl.textContent = diff.toFixed(1);
-        banner.className = 'rounded-xl p-2.5 bg-amber-500 text-slate-950 transition-colors duration-300';
+        banner.className = 'rounded-xl p-2 bg-amber-500 text-slate-950 transition-colors duration-300';
         progressBar.className = 'bg-slate-900 h-full';
         alertMsg.textContent = `⚡ Sắp tới vị trí đứt (trùng võng +${sagPct}%)! Còn ${diff.toFixed(0)}m`;
         hasAlertedNear = false;
       } else if (diff < -5) {
         remainLabel.textContent = 'Đã vượt quá OTDR';
         remainEl.textContent = `+${Math.abs(diff).toFixed(1)}`;
-        banner.className = 'rounded-xl p-2.5 bg-rose-800 text-white transition-colors duration-300';
+        banner.className = 'rounded-xl p-2 bg-rose-800 text-white transition-colors duration-300';
         progressBar.className = 'bg-amber-300 h-full';
         alertMsg.textContent = `↩️ Bạn đã đi quá điểm đứt ${Math.abs(diff).toFixed(1)}m! Hãy quay lại.`;
         hasAlertedNear = false;
       } else {
         remainLabel.textContent = 'Còn cách điểm đứt';
         remainEl.textContent = diff.toFixed(1);
-        banner.className = 'rounded-xl p-2.5 bg-blue-900 text-white transition-colors duration-300';
+        banner.className = 'rounded-xl p-2 bg-blue-900 text-white transition-colors duration-300';
         progressBar.className = 'bg-emerald-400 h-full';
         alertMsg.textContent = isTracking
           ? `🛰️ Đang bám tuyến cáp (trùng võng +${sagPct}%)...`
@@ -549,14 +545,14 @@
       const btnText = document.getElementById('btnStartText');
 
       if (isTracking) {
-        btn.className = 'col-span-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
+        btn.className = 'col-span-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold py-2.5 px-2.5 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
         btnText.textContent = 'Tạm dừng đo';
         if (routePoints.length === 0 && currentPos && !isManualMode) {
           addPointToRoute(currentPos.lat, currentPos.lng, false);
         }
         showToast('Đã chốt mốc Hộp GPON & bắt đầu đo!');
       } else {
-        btn.className = 'col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
+        btn.className = 'col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 px-2.5 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
         btnText.textContent = routePoints.length > 0 ? 'Tiếp tục đo' : 'Bắt đầu từ GPON';
       }
       updateCalculations();
@@ -689,7 +685,7 @@
       pinMarkers = [];
 
       const btn = document.getElementById('btnStartStop');
-      btn.className = 'col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
+      btn.className = 'col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-2.5 px-2.5 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
       document.getElementById('btnStartText').textContent = 'Bắt đầu từ GPON';
       updateCalculations();
     }
@@ -742,6 +738,7 @@
     }
 
     window.onload = initMap;
+    window.addEventListener('resize', () => map && map.invalidateSize());
   </script>
 </body>
 </html>
