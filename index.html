@@ -171,4 +171,577 @@
       <button onclick="openInGoogleMaps()" class="bg-white/95 backdrop-blur px-2 py-2 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center gap-0.5 active:scale-95 transition">
         <i data-lucide="external-link" class="w-5 h-5 text-emerald-600"></i>
         <span class="text-[10px] font-bold text-slate-700">G-Maps</span>
-      </
+      </button>
+    </div>
+
+    <div id="manualBanner" class="hidden absolute top-3 left-3 right-16 z-10 bg-amber-500 text-slate-950 px-3 py-2 rounded-xl shadow-lg text-xs font-bold flex items-center justify-between">
+      <span>Chạm lên bản đồ để chấm tuyến cáp</span>
+      <button onclick="undoManualPoint()" class="bg-slate-900 text-white px-2 py-1 rounded text-[11px] ml-2 shrink-0">Hoàn tác</button>
+    </div>
+  </div>
+
+  <!-- THANH ĐIỀU KHIỂN DƯỚI CÙNG -->
+  <footer class="bg-white border-t border-slate-200 px-3 py-2.5 z-20 shrink-0 panel-card">
+    <div class="grid grid-cols-4 gap-2">
+      <button id="btnStartStop" onclick="toggleTracking()" class="col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition">
+        <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+        <span id="btnStartText">Bắt đầu từ GPON</span>
+      </button>
+
+      <button onclick="addPinMarker()" class="col-span-1 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold py-2 px-1 rounded-xl shadow flex flex-col items-center justify-center text-[11px] transition">
+        <i data-lucide="map-pin" class="w-4 h-4 mb-0.5"></i>
+        <span>Ghim cột</span>
+      </button>
+
+      <button onclick="resetAndSave()" class="col-span-1 bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-800 font-bold py-2 px-1 rounded-xl flex flex-col items-center justify-center text-[11px] transition">
+        <i data-lucide="rotate-ccw" class="w-4 h-4 mb-0.5"></i>
+        <span>Lưu / Mới</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- MODAL HƯỚNG DẪN KỸ THUẬT VIÊN -->
+  <div id="guideModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-3">
+    <div class="bg-white w-full max-w-md rounded-2xl max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-4 py-3 bg-[#005aab] text-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i data-lucide="book-open" class="w-5 h-5 text-amber-300"></i>
+          <div>
+            <h3 class="font-bold text-sm">Hướng Dẫn Kỹ Thuật Viên</h3>
+            <p class="text-[11px] text-blue-100">TTVT Cẩm Phả • Vũ Ngọc Hải (0918961781)</p>
+          </div>
+        </div>
+        <button onclick="toggleGuideModal()" class="p-1.5 rounded-full bg-blue-800/70 hover:bg-blue-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-3.5 overflow-y-auto space-y-3 text-xs text-slate-700 leading-relaxed">
+        <!-- Khối 1 -->
+        <div class="p-3 rounded-xl bg-blue-50/90 border border-blue-200">
+          <div class="font-extrabold text-blue-900 text-sm mb-1.5 flex items-center gap-1.5">
+            <span class="text-blue-700">1</span> Quy trình dò điểm đứt ngoài hiện trường:
+          </div>
+          <ol class="list-decimal pl-4 space-y-1 text-slate-700">
+            <li>Đứng tại <b>Hộp GPON / ODF</b> nơi đặt máy đo OTDR.</li>
+            <li>Nhập <b>Khoảng cách đứt (m)</b> hiển thị trên máy OTDR. Chọn hệ số dự phòng / độ trùng võng cáp (thường <b>+1% đến +2%</b> do cáp võng qua cột).</li>
+            <li>Bấm <b>"Bắt đầu từ GPON"</b> để chốt điểm gốc A, sau đó di chuyển dọc theo tuyến cáp.</li>
+            <li>Khi còn dưới <b>50m</b> bảng sẽ chuyển vàng; khi đến sát điểm đứt (<b>±5m</b>) máy sẽ rung và phát âm thanh cảnh báo.</li>
+          </ol>
+        </div>
+
+        <!-- Khối 2 -->
+        <div class="p-3 rounded-xl bg-amber-50/90 border border-amber-200">
+          <div class="font-extrabold text-amber-900 text-sm mb-1.5 flex items-center gap-1.5">
+            <span class="text-amber-700">2</span> Bật GPS chính xác cao trên Android:
+          </div>
+          <ul class="list-disc pl-4 space-y-1 text-slate-700">
+            <li>Vuốt thanh trạng thái xuống → Nhấn giữ biểu tượng <b>Vị trí (Location)</b>.</li>
+            <li>Chọn <b>Dịch vụ vị trí (Location Services)</b> → Bật <b>Độ chính xác vị trí của Google (Google Location Accuracy)</b>.</li>
+            <li>Cho phép trình duyệt Chrome quyền truy cập <b>"Vị trí chính xác"</b>.</li>
+          </ul>
+        </div>
+
+        <!-- Khối 3 -->
+        <div class="p-3 rounded-xl bg-emerald-50/90 border border-emerald-200">
+          <div class="font-extrabold text-emerald-900 text-sm mb-1 flex items-center gap-1.5">
+            <i data-lucide="smartphone" class="w-4 h-4 text-emerald-700"></i>
+            <span>Đưa ứng dụng ra màn hình chính Android:</span>
+          </div>
+          <p class="text-slate-700">
+            Trên trình duyệt <b>Google Chrome</b>, bấm vào dấu <b>3 chấm (⋮)</b> ở góc trên bên phải → Chọn <b>"Thêm vào Màn hình chính" (Add to Home screen)</b> để sử dụng như một App Android độc lập.
+          </p>
+        </div>
+      </div>
+
+      <div class="p-3 border-t bg-white shrink-0">
+        <button onclick="toggleGuideModal()" class="w-full bg-[#005aab] hover:bg-blue-700 active:scale-[0.99] text-white font-bold text-sm py-2.5 rounded-xl shadow transition">
+          Đã hiểu, bắt đầu làm việc
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL LỊCH SỬ ĐO KIỂM -->
+  <div id="historyModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-3">
+    <div class="bg-white w-full max-w-md rounded-2xl max-h-[82vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="px-4 py-3 bg-[#005aab] text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-sm">Lịch sử dò cáp quang OTDR</h3>
+          <p class="text-[11px] text-blue-100">TTVT Cẩm Phả • Vũ Ngọc Hải (0918961781)</p>
+        </div>
+        <button onclick="toggleHistoryModal()" class="p-1 rounded-lg hover:bg-blue-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="historyList" class="p-3 overflow-y-auto space-y-2 flex-1 text-sm">
+        <p class="text-slate-400 text-center py-6">Chưa có dữ liệu tuyến đo nào được lưu.</p>
+      </div>
+      <div class="p-3 border-t bg-slate-50 flex justify-between items-center">
+        <button onclick="clearHistory()" class="text-xs font-bold text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50">Xóa tất cả</button>
+        <button onclick="toggleHistoryModal()" class="bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST THÔNG BÁO NHANH -->
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-xl z-50 opacity-0 pointer-events-none transition-opacity duration-300 text-center max-w-[90vw]">
+    Đã sao chép
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const TECH_INFO = {
+      unit: "Trung Tâm Viễn Thông Cẩm Phả",
+      name: "Vũ Ngọc Hải",
+      phone: "0918961781"
+    };
+
+    let map, streetLayer, satelliteLayer;
+    let isSatellite = false;
+    let isTracking = false;
+    let isManualMode = false;
+    let watchId = null;
+
+    let currentPos = null;
+    let routePoints = [];
+    let totalDistance = 0;       // Quãng đường bản đồ/GPS thực tế (m)
+    let hasAlertedNear = false;
+
+    let userMarker = null;
+    let accuracyCircle = null;
+    let startMarker = null;
+    let routePolyline = null;
+    let pinMarkers = [];
+
+    function initMap() {
+      const defaultCenter = [21.0114, 107.2747];
+      map = L.map('map', { zoomControl: false }).setView(defaultCenter, 17);
+
+      streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        attribution: '© OpenStreetMap'
+      });
+
+      satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 20,
+        attribution: '© Esri Satellite'
+      });
+
+      streetLayer.addTo(map);
+
+      routePolyline = L.polyline([], {
+        color: '#ef4444',
+        weight: 6,
+        opacity: 0.9,
+        lineJoin: 'round'
+      }).addTo(map);
+
+      map.on('click', function(e) {
+        if (!isManualMode) return;
+        addPointToRoute(e.latlng.lat, e.latlng.lng, true);
+      });
+
+      startGPSWatch();
+      renderHistory();
+    }
+
+    function startGPSWatch() {
+      if (!('geolocation' in navigator)) {
+        showToast('Trình duyệt không hỗ trợ GPS!');
+        return;
+      }
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const acc = Math.round(pos.coords.accuracy);
+
+          currentPos = { lat, lng, accuracy: acc };
+
+          document.getElementById('coordText').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+          const accEl = document.getElementById('gpsAccuracy');
+          accEl.textContent = `±${acc}m`;
+          accEl.className = acc <= 15
+            ? 'text-[10px] font-bold px-1.5 rounded bg-emerald-100 text-emerald-800'
+            : 'text-[10px] font-bold px-1.5 rounded bg-amber-100 text-amber-800';
+
+          document.getElementById('gpsDot').className = 'w-2 h-2 rounded-full bg-emerald-500';
+
+          updateUserLocationOnMap(lat, lng, acc);
+
+          if (isTracking && !isManualMode && acc <= 30) {
+            addPointToRoute(lat, lng, false);
+          }
+        },
+        () => {
+          document.getElementById('coordText').textContent = 'Chưa bật GPS / Bị chặn';
+          document.getElementById('gpsDot').className = 'w-2 h-2 rounded-full bg-red-500';
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          timeout: 10000
+        }
+      );
+    }
+
+    function updateUserLocationOnMap(lat, lng, acc) {
+      if (!userMarker) {
+        const userIcon = L.divIcon({
+          className: 'custom-user-marker',
+          html: `<div style="width:18px;height:18px;background:#005aab;border:3px solid #fff;border-radius:50%;box-shadow:0 0 10px rgba(0,90,171,0.8);"></div>`,
+          iconSize: [18, 18],
+          iconAnchor: [9, 9]
+        });
+        userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+        accuracyCircle = L.circle([lat, lng], {
+          radius: acc,
+          color: '#3b82f6',
+          fillColor: '#3b82f6',
+          fillOpacity: 0.12,
+          weight: 1
+        }).addTo(map);
+        map.setView([lat, lng], 18);
+      } else {
+        userMarker.setLatLng([lat, lng]);
+        accuracyCircle.setLatLng([lat, lng]);
+        accuracyCircle.setRadius(acc);
+        if (isTracking) {
+          map.panTo([lat, lng]);
+        }
+      }
+    }
+
+    function calcHaversineMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const toRad = (deg) => deg * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function addPointToRoute(lat, lng, isManual) {
+      if (routePoints.length === 0) {
+        routePoints.push([lat, lng]);
+        routePolyline.setLatLngs(routePoints);
+
+        const startIcon = L.divIcon({
+          html: `<div style="background:#059669;color:#fff;font-weight:900;font-size:11px;padding:2px 6px;border-radius:6px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);white-space:nowrap;">GPON (A)</div>`,
+          className: '',
+          iconAnchor: [25, 12]
+        });
+        startMarker = L.marker([lat, lng], { icon: startIcon }).addTo(map);
+        updateCalculations();
+        return;
+      }
+
+      const lastPt = routePoints[routePoints.length - 1];
+      const segmentDist = calcHaversineMeters(lastPt[0], lastPt[1], lat, lng);
+
+      if (isManual || segmentDist >= 2.5) {
+        totalDistance += segmentDist;
+        routePoints.push([lat, lng]);
+        routePolyline.setLatLngs(routePoints);
+        updateCalculations();
+      }
+    }
+
+    // Quy đổi quãng đường thực tế có tính độ trùng võng cáp (%)
+    function getAdjustedDistance() {
+      const sagPct = parseFloat(document.getElementById('sagFactor').value) || 0;
+      return totalDistance * (1 + sagPct / 100);
+    }
+
+    function updateCalculations() {
+      const targetOtdr = parseFloat(document.getElementById('otdrInput').value) || 0;
+      const sagPct = parseFloat(document.getElementById('sagFactor').value) || 0;
+      const adjustedDist = getAdjustedDistance();
+
+      document.getElementById('traveledDist').textContent = adjustedDist.toFixed(1);
+
+      const banner = document.getElementById('statusBanner');
+      const remainEl = document.getElementById('remainDist');
+      const remainLabel = document.getElementById('remainLabel');
+      const progressBar = document.getElementById('progressBar');
+      const alertMsg = document.getElementById('alertMessage');
+
+      banner.classList.remove('alert-blink');
+
+      if (targetOtdr <= 0) {
+        remainEl.textContent = '--';
+        progressBar.style.width = '0%';
+        banner.className = 'rounded-xl p-2.5 bg-slate-800 text-white transition-colors duration-300';
+        alertMsg.textContent = isTracking
+          ? `Đang đo (trùng võng +${sagPct}%)... Nhập mét OTDR để cảnh báo`
+          : 'Đứng tại Hộp GPON (Điểm A) và bấm "Bắt đầu từ GPON"';
+        return;
+      }
+
+      const diff = targetOtdr - adjustedDist;
+      const pct = Math.min(100, Math.max(0, (adjustedDist / targetOtdr) * 100));
+      progressBar.style.width = `${pct}%`;
+
+      if (Math.abs(diff) <= 5) {
+        remainLabel.textContent = 'TẠI ĐIỂM ĐỨT (±5m)';
+        remainEl.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}`;
+        banner.className = 'rounded-xl p-2.5 bg-red-600 text-white alert-blink';
+        progressBar.className = 'bg-white h-full';
+        alertMsg.textContent = '⚠️ ĐÃ ĐẾN VÙNG ĐIỂM ĐỨT CÁP QUANG! KIỂM TRA CỘT / MĂNG XÔNG!';
+        triggerVibrateAndBeep();
+      } else if (diff > 5 && diff <= 50) {
+        remainLabel.textContent = 'Sắp tới điểm đứt';
+        remainEl.textContent = diff.toFixed(1);
+        banner.className = 'rounded-xl p-2.5 bg-amber-500 text-slate-950 transition-colors duration-300';
+        progressBar.className = 'bg-slate-900 h-full';
+        alertMsg.textContent = `⚡ Sắp tới vị trí đứt (trùng võng +${sagPct}%)! Còn ${diff.toFixed(0)}m`;
+        hasAlertedNear = false;
+      } else if (diff < -5) {
+        remainLabel.textContent = 'Đã vượt quá OTDR';
+        remainEl.textContent = `+${Math.abs(diff).toFixed(1)}`;
+        banner.className = 'rounded-xl p-2.5 bg-rose-800 text-white transition-colors duration-300';
+        progressBar.className = 'bg-amber-300 h-full';
+        alertMsg.textContent = `↩️ Bạn đã đi quá điểm đứt ${Math.abs(diff).toFixed(1)}m! Hãy quay lại.`;
+        hasAlertedNear = false;
+      } else {
+        remainLabel.textContent = 'Còn cách điểm đứt';
+        remainEl.textContent = diff.toFixed(1);
+        banner.className = 'rounded-xl p-2.5 bg-blue-900 text-white transition-colors duration-300';
+        progressBar.className = 'bg-emerald-400 h-full';
+        alertMsg.textContent = isTracking
+          ? `🛰️ Đang bám tuyến cáp (trùng võng +${sagPct}%)...`
+          : '⏸️ Đang tạm dừng đo. Bấm Tiếp tục để đo tiếp.';
+        hasAlertedNear = false;
+      }
+    }
+
+    function triggerVibrateAndBeep() {
+      if (hasAlertedNear) return;
+      hasAlertedNear = true;
+      if ('vibrate' in navigator) {
+        navigator.vibrate([300, 150, 300, 150, 500]);
+      }
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    function toggleTracking() {
+      if (!currentPos && !isManualMode) {
+        showToast('Đang chờ GPS định vị vị trí của bạn...');
+        return;
+      }
+
+      isTracking = !isTracking;
+      const btn = document.getElementById('btnStartStop');
+      const btnText = document.getElementById('btnStartText');
+
+      if (isTracking) {
+        btn.className = 'col-span-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
+        btnText.textContent = 'Tạm dừng đo';
+        if (routePoints.length === 0 && currentPos && !isManualMode) {
+          addPointToRoute(currentPos.lat, currentPos.lng, false);
+        }
+        showToast('Đã chốt mốc Hộp GPON & bắt đầu đo!');
+      } else {
+        btn.className = 'col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
+        btnText.textContent = routePoints.length > 0 ? 'Tiếp tục đo' : 'Bắt đầu từ GPON';
+      }
+      updateCalculations();
+    }
+
+    function addPinMarker() {
+      const pos = currentPos ? [currentPos.lat, currentPos.lng] : map.getCenter();
+      const lat = Array.isArray(pos) ? pos[0] : pos.lat;
+      const lng = Array.isArray(pos) ? pos[1] : pos.lng;
+      const adj = getAdjustedDistance();
+
+      const pinNum = pinMarkers.length + 1;
+      const pinIcon = L.divIcon({
+        html: `<div style="background:#f59e0b;color:#000;font-weight:900;font-size:11px;padding:2px 6px;border-radius:99px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);">Mốc #${pinNum} (${adj.toFixed(0)}m)</div>`,
+        className: ''
+      });
+
+      const marker = L.marker([lat, lng], { icon: pinIcon })
+        .addTo(map)
+        .bindPopup(`<b>Mốc #${pinNum}</b><br>Khoảng cách từ GPON: <b>${adj.toFixed(1)}m</b><br>Tọa độ: ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>KTV: ${TECH_INFO.name} (${TECH_INFO.phone})`);
+      pinMarkers.push(marker);
+      showToast(`Đã ghim Mốc #${pinNum} tại ${adj.toFixed(1)}m`);
+    }
+
+    function toggleMapLayer() {
+      isSatellite = !isSatellite;
+      if (isSatellite) {
+        map.removeLayer(streetLayer);
+        satelliteLayer.addTo(map);
+        document.getElementById('layerLabel').textContent = 'Đường phố';
+      } else {
+        map.removeLayer(satelliteLayer);
+        streetLayer.addTo(map);
+        document.getElementById('layerLabel').textContent = 'Vệ tinh';
+      }
+    }
+
+    function centerOnUser() {
+      if (currentPos) {
+        map.setView([currentPos.lat, currentPos.lng], 19);
+      } else {
+        showToast('Chưa có tín hiệu GPS');
+      }
+    }
+
+    function toggleManualMode() {
+      isManualMode = !isManualMode;
+      const btn = document.getElementById('btnManualMode');
+      const banner = document.getElementById('manualBanner');
+
+      if (isManualMode) {
+        btn.classList.add('ring-2', 'ring-amber-500', 'bg-amber-50');
+        banner.classList.remove('hidden');
+        showToast('Chế độ Chấm tay: Chạm lên bản đồ để đo thử');
+      } else {
+        btn.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-50');
+        banner.classList.add('hidden');
+      }
+    }
+
+    function undoManualPoint() {
+      if (routePoints.length === 0) return;
+      if (routePoints.length === 1) {
+        routePoints = [];
+        totalDistance = 0;
+        if (startMarker) { map.removeLayer(startMarker); startMarker = null; }
+      } else {
+        const last = routePoints.pop();
+        const prev = routePoints[routePoints.length - 1];
+        totalDistance = Math.max(0, totalDistance - calcHaversineMeters(prev[0], prev[1], last[0], last[1]));
+      }
+      routePolyline.setLatLngs(routePoints);
+      updateCalculations();
+    }
+
+    function copyCurrentCoords() {
+      if (!currentPos) {
+        showToast('Chưa có tọa độ GPS để sao chép');
+        return;
+      }
+      const otdrVal = document.getElementById('otdrInput').value || 'Chưa nhập';
+      const sagPct = document.getElementById('sagFactor').value || '0';
+      const adj = getAdjustedDistance().toFixed(1);
+      const coords = `${currentPos.lat.toFixed(6)}, ${currentPos.lng.toFixed(6)}`;
+      const reportText = `[${TECH_INFO.unit} - KTV: ${TECH_INFO.name} - ${TECH_INFO.phone}]\nTọa độ điểm đo: ${coords}\nOTDR: ${otdrVal}m | Trùng võng: +${sagPct}% | Đã đi: ${adj}m\nGoogle Maps: https://maps.google.com/?q=${currentPos.lat},${currentPos.lng}`;
+
+      navigator.clipboard?.writeText(reportText);
+      showToast(`Đã sao chép tọa độ & thông tin KTV: ${coords}`);
+    }
+
+    function openInGoogleMaps() {
+      if (!currentPos) {
+        showToast('Chưa có tọa độ GPS');
+        return;
+      }
+      window.open(`https://www.google.com/maps/search/?api=1&query=${currentPos.lat},${currentPos.lng}`, '_blank');
+    }
+
+    function toggleSunMode() {
+      document.body.classList.toggle('high-contrast');
+      const active = document.body.classList.contains('high-contrast');
+      showToast(active ? 'Đã bật chế độ ngoài trời nắng gắt' : 'Đã tắt chế độ tương phản cao');
+    }
+
+    function resetAndSave() {
+      const adj = getAdjustedDistance();
+      if (adj > 0 && currentPos) {
+        const logs = JSON.parse(localStorage.getItem('vnpt_otdr_logs') || '[]');
+        logs.unshift({
+          time: new Date().toLocaleString('vi-VN'),
+          unit: TECH_INFO.unit,
+          tech: `${TECH_INFO.name} - ${TECH_INFO.phone}`,
+          otdr: document.getElementById('otdrInput').value || '0',
+          sag: document.getElementById('sagFactor').value || '0',
+          traveled: adj.toFixed(1),
+          coords: `${currentPos.lat.toFixed(6)}, ${currentPos.lng.toFixed(6)}`
+        });
+        localStorage.setItem('vnpt_otdr_logs', JSON.stringify(logs.slice(0, 30)));
+        renderHistory();
+        showToast('Đã lưu lịch sử ca đo và đặt lại tuyến mới!');
+      }
+
+      isTracking = false;
+      routePoints = [];
+      totalDistance = 0;
+      hasAlertedNear = false;
+      routePolyline.setLatLngs([]);
+      if (startMarker) { map.removeLayer(startMarker); startMarker = null; }
+      pinMarkers.forEach(m => map.removeLayer(m));
+      pinMarkers = [];
+
+      const btn = document.getElementById('btnStartStop');
+      btn.className = 'col-span-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow flex items-center justify-center gap-1.5 text-sm transition';
+      document.getElementById('btnStartText').textContent = 'Bắt đầu từ GPON';
+      updateCalculations();
+    }
+
+    function renderHistory() {
+      const logs = JSON.parse(localStorage.getItem('vnpt_otdr_logs') || '[]');
+      const countBadge = document.getElementById('historyCount');
+      const listEl = document.getElementById('historyList');
+
+      if (logs.length > 0) {
+        countBadge.textContent = logs.length;
+        countBadge.classList.remove('hidden');
+      } else {
+        countBadge.classList.add('hidden');
+        listEl.innerHTML = '<p class="text-slate-400 text-center py-6">Chưa có dữ liệu tuyến đo nào được lưu.</p>';
+        return;
+      }
+
+      listEl.innerHTML = logs.map(item => `
+        <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50">
+          <div class="flex justify-between text-[11px] text-slate-500 mb-1">
+            <span>${item.time}</span>
+            <span class="font-bold text-blue-700">OTDR: ${item.otdr}m (+${item.sag || 0}%)</span>
+          </div>
+          <div class="text-xs font-bold text-slate-800">Quãng đường đo: ${item.traveled}m</div>
+          <div class="text-[11px] font-mono text-slate-600 mt-0.5">Tọa độ: ${item.coords}</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">${item.unit || TECH_INFO.unit} • ${item.tech || (TECH_INFO.name + ' - ' + TECH_INFO.phone)}</div>
+        </div>
+      `).join('');
+    }
+
+    function toggleGuideModal() {
+      document.getElementById('guideModal').classList.toggle('hidden');
+    }
+
+    function toggleHistoryModal() {
+      document.getElementById('historyModal').classList.toggle('hidden');
+    }
+
+    function clearHistory() {
+      localStorage.removeItem('vnpt_otdr_logs');
+      renderHistory();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('opacity-0');
+      setTimeout(() => t.classList.add('opacity-0'), 2400);
+    }
+
+    window.onload = initMap;
+  </script>
+</body>
+</html>
